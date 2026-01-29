@@ -1,196 +1,120 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Мой личный дневник</title>
-  <meta name="description" content="Личный дневник. Всё хранится локально на устройстве." />
 
   <!-- PWA -->
-  <meta name="theme-color" content="#0f172a" />
-  <link rel="manifest" href="manifest.json" />
-
-  <!-- iOS: чтобы открывалось как приложение -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Мой дневник" />
-  <!-- ВАЖНО: добавь файл apple-touch-icon.png (180×180) в корень репозитория -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
 
   <style>
-    :root{
-      --bg:#0f172a;
-      --card:#020617;
-      --text:#e5e7eb;
-      --muted:rgba(229,231,235,.85);
-      --stroke:rgba(255,255,255,.12);
-      --btn1:#2563eb;
-      --btn2:#1d4ed8;
-      --radius:16px;
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #e5e7eb;
     }
 
-    *{ box-sizing:border-box; }
-
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background: radial-gradient(1200px 600px at 50% 35%, rgba(59,130,246,.15), transparent 60%), var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
+    .card {
+      width: 90%;
+      max-width: 420px;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7);
     }
 
-    .card{
-      width:min(520px, 95vw);
-      background:rgba(2,6,23,.88);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:var(--radius);
-      padding:22px;
-      box-shadow:0 20px 60px rgba(0,0,0,.45);
-      backdrop-filter: blur(10px);
+    h1 {
+      font-size: 18px;
+      margin-bottom: 12px;
     }
 
-    h1{
-      margin:0 0 14px 0;
-      font-size:20px;
-      font-weight:700;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      letter-spacing:.2px;
+    textarea {
+      width: 100%;
+      height: 160px;
+      background: #020617;
+      color: #e5e7eb;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      resize: none;
+      font-size: 14px;
     }
 
-    .editor{
-      width:100%;
-      min-height:120px;
-      resize:vertical;
-      padding:14px 14px;
-      border-radius:12px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      outline:none;
-      font-size:14px;
-      line-height:1.45;
-    }
-    .editor::placeholder{ color: rgba(229,231,235,.55); }
-
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-top:12px;
-      flex-wrap:wrap;
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
-    button{
-      flex:1;
-      min-width:140px;
-      border:none;
-      cursor:pointer;
-      padding:12px 14px;
-      border-radius:12px;
-      font-weight:700;
-      color:white;
-      background: linear-gradient(90deg, var(--btn1), var(--btn2));
-      box-shadow: 0 10px 30px rgba(37,99,235,.25);
-    }
-    button:active{ transform: translateY(1px); }
-
-    .status{
-      font-size:13px;
-      color: rgba(229,231,235,.75);
-      margin-left:auto;
-      white-space:nowrap;
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      opacity: 0.7;
+      text-align: right;
     }
 
-    .text{
-      margin-top:14px;
-      font-size:14px;
-      color:var(--muted);
-      line-height:1.5;
-    }
-    .text strong{ color: var(--text); }
-
-    .saved{
-      color: rgba(134,239,172,.95);
-    }
-
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      color: rgba(229,231,235,.65);
+    .footer {
+      margin-top: 14px;
+      font-size: 11px;
+      opacity: 0.6;
+      line-height: 1.4;
     }
   </style>
 </head>
+
 <body>
   <div class="card">
-    <h1>🗂️ Мой личный дневник</h1>
+    <h1>📁 Мой личный дневник</h1>
 
-    <textarea id="note" class="editor" placeholder="Напиши здесь свою мысль..."></textarea>
+    <textarea id="note" placeholder="Здесь мои мысли..."></textarea>
 
-    <div class="row">
-      <button id="saveBtn">Сохранить</button>
-      <div id="status" class="status">Готов</div>
+    <button id="saveBtn">Сохранить</button>
+    <div class="status" id="status">Готово</div>
+
+    <div class="footer">
+      Всё хранится локально.<br>
+      Без интернета. Без серверов.<br>
+      Только ты.
     </div>
-
-    <div class="text">
-      Здесь я храню свои мысли.<br/>
-      <strong>Идеи. Решения. Откровения.</strong><br/><br/>
-      Всё остаётся только у меня.<br/>
-      Без лишних глаз.
-    </div>
-
-    <div class="hint">Хранение: локально (LocalStorage). Никаких отправок в интернет.</div>
   </div>
 
-  <script>
-    const KEY = "private_ai_diary_note_v1";
+<script>
+  const note = document.getElementById('note');
+  const saveBtn = document.getElementById('saveBtn');
+  const status = document.getElementById('status');
+  const KEY = 'private-ai-diary';
 
-    const note = document.getElementById("note");
-    const statusEl = document.getElementById("status");
-    const saveBtn = document.getElementById("saveBtn");
+  const saved = localStorage.getItem(KEY);
+  if (saved) note.value = saved;
 
-    function setStatus(text, cls=""){
-      statusEl.textContent = text;
-      statusEl.className = "status " + cls;
-    }
+  saveBtn.addEventListener('click', () => {
+    localStorage.setItem(KEY, note.value);
+    status.textContent = 'Сохранено ✓';
+    setTimeout(() => status.textContent = 'Готово', 1200);
+  });
 
-    // Load
-    try{
-      const saved = localStorage.getItem(KEY);
-      if(saved) note.value = saved;
-    }catch(e){}
-
-    // Save (button)
-    saveBtn.addEventListener("click", () => {
-      try{
-        localStorage.setItem(KEY, note.value);
-        setStatus("Сохранено ✅", "saved");
-        setTimeout(()=>setStatus("Готов"), 1200);
-      }catch(e){
-        setStatus("Ошибка сохранения", "");
-      }
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js');
     });
+  }
+</script>
 
-    // Autosave (optional): on Ctrl+S / Cmd+S
-    window.addEventListener("keydown", (e) => {
-      const isSave = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s";
-      if(!isSave) return;
-      e.preventDefault();
-      saveBtn.click();
-    });
-
-    // Register Service Worker (PWA offline)
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
-      });
-    }
-  </script>
 </body>
 </html>
+
+
