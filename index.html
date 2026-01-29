@@ -1,88 +1,105 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Мой личный дневник</title>
-<style>
-body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#0b1220;
-  color:#e5e7eb;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-}
-.card{
-  width:360px;
-  background:#111827;
-  padding:20px;
-  border-radius:12px;
-}
-textarea{
-  width:100%;
-  height:80px;
-  background:#020617;
-  color:#e5e7eb;
-  border:1px solid #1f2933;
-  border-radius:8px;
-  padding:8px;
-}
-button{
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:#2563eb;
-  color:#fff;
-  font-size:16px;
-}
-.entry{
-  margin-top:10px;
-  padding:8px;
-  background:#020617;
-  border-radius:8px;
-  font-size:14px;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Мой личный дневник</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0b1a2a, #0e3a6d);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+      color: #eaf2ff;
+    }
+    .card {
+      width: 420px;
+      background: rgba(10, 20, 40, 0.9);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 90px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      resize: none;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      background: linear-gradient(90deg,#2b7cff,#4bb0ff);
+      color: #fff;
+      cursor: pointer;
+    }
+    .list {
+      margin-top: 16px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .item {
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
+
 <div class="card">
-  <h3>📒 Мой личный дневник</h3>
-  <textarea id="text" placeholder="Напиши мысль"></textarea>
+  <h1>📒 Мой личный дневник</h1>
+  <textarea id="text" placeholder="Напиши здесь свою мысль..."></textarea>
   <button onclick="save()">Сохранить</button>
-  <div id="list"></div>
+  <div class="list" id="list"></div>
 </div>
 
 <script>
-const KEY = "diary_entries";
+  function getData() {
+    return JSON.parse(localStorage.getItem("notes") || "[]");
+  }
 
-function save(){
-  const t = document.getElementById("text");
-  if(!t.value.trim()) return;
-  const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-  arr.push({text:t.value, date:new Date().toLocaleString()});
-  localStorage.setItem(KEY, JSON.stringify(arr));
-  t.value="";
+  function save() {
+    const text = document.getElementById("text").value.trim();
+    if (!text) return;
+    const data = getData();
+    data.push({ text, time: new Date().toLocaleString() });
+    localStorage.setItem("notes", JSON.stringify(data));
+    document.getElementById("text").value = "";
+    render();
+  }
+
+  function render() {
+    const list = document.getElementById("list");
+    const data = getData();
+    list.innerHTML = "";
+    data.slice().reverse().forEach(n => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.textContent = n.time + " — " + n.text;
+      list.appendChild(div);
+    });
+  }
+
   render();
-}
-
-function render(){
-  const list = document.getElementById("list");
-  list.innerHTML="";
-  const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-  arr.slice().reverse().forEach(e=>{
-    const d=document.createElement("div");
-    d.className="entry";
-    d.innerHTML="<b>"+e.date+"</b><br>"+e.text;
-    list.appendChild(d);
-  });
-}
-
-render();
 </script>
+
 </body>
 </html>
+
 
