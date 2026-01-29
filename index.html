@@ -114,6 +114,38 @@ function loadEntries() {
     });
   };
 }
+<!-- STAGE B: Categories -->
+<script>
+const categories = [
+  "Иман",
+  "Крипта",
+  "Дисциплина",
+  "Здоровье",
+  "Семья",
+  "Идеи",
+  "Работа",
+  "Душевное"
+];
+
+const categorySelect = document.createElement("select");
+categorySelect.id = "categorySelect";
+categorySelect.style.marginTop = "10px";
+categorySelect.style.width = "100%";
+
+categories.forEach(cat => {
+  const option = document.createElement("option");
+  option.value = cat;
+  option.textContent = cat;
+  categorySelect.appendChild(option);
+});
+
+const textarea = document.querySelector("textarea");
+if (textarea) {
+  textarea.parentNode.insertBefore(categorySelect, textarea.nextSibling);
+}
+</script>
+
+
 </script>
 
 </body>
