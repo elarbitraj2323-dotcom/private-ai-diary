@@ -1,153 +1,111 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Private AI Diary</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#111827">
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-    }
-    header {
-      padding: 16px;
-      text-align: center;
-      background: #020617;
-      font-weight: 600;
-      font-size: 18px;
-    }
-    main {
-      padding: 16px;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    textarea {
-      width: 100%;
-      height: 120px;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      resize: none;
-      font-size: 15px;
-    }
-    .entry {
-      background: #020617;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
-    .date {
-      font-size: 12px;
-      opacity: 0.6;
-      margin-bottom: 6px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Мой личный дневник</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin:0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(1200px 600px at 50% 35%, rgba(59,130,246,.15), transparent 60%), #0f172a;
+  color:#e5e7eb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:24px;
+}
+.card {
+  background:rgba(255,255,255,.05);
+  border-radius:14px;
+  padding:20px;
+  width:100%;
+  max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+textarea {
+  width:100%;
+  height:120px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.15);
+  background:#020617;
+  color:#e5e7eb;
+  padding:10px;
+}
+button {
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#2563eb;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+.entry {
+  margin-top:10px;
+  background:rgba(255,255,255,.06);
+  padding:10px;
+  border-radius:10px;
+}
+.date {
+  font-size:12px;
+  opacity:.6;
+}
+</style>
 </head>
+
 <body>
+<div class="card">
+  <h3>📁 Мой личный дневник</h3>
 
-<header>🧠 Private AI Diary</header>
-
-<main>
-  <textarea id="text" placeholder="Запиши мысль..."></textarea>
+  <textarea id="text" placeholder="Напиши здесь свою мысль..."></textarea>
   <button onclick="saveEntry()">Сохранить</button>
 
+  <p style="font-size:13px;opacity:.7;margin-top:10px">
+    Хранение локально (LocalStorage). Никаких отправок в интернет.
+  </p>
+
   <div id="entries"></div>
-</main>
+</div>
 
 <script>
-let db;
-
-const request = indexedDB.open("DiaryDB", 1);
-
-request.onupgradeneeded = function(e) {
-  db = e.target.result;
-  db.createObjectStore("entries", { keyPath: "id", autoIncrement: true });
-};
-
-request.onsuccess = function(e) {
-  db = e.target.result;
-  loadEntries();
-};
-
 function saveEntry() {
   const text = document.getElementById("text").value.trim();
   if (!text) return;
 
-  const tx = db.transaction("entries", "readwrite");
-  const store = tx.objectStore("entries");
+  const entries = JSON.parse(localStorage.getItem("entries") || "[]");
 
-  store.add({
+  entries.push({
     text,
     date: new Date().toLocaleString()
   });
 
+  localStorage.setItem("entries", JSON.stringify(entries));
   document.getElementById("text").value = "";
-  tx.oncomplete = loadEntries;
+  renderEntries();
 }
 
-function loadEntries() {
-  const tx = db.transaction("entries", "readonly");
-  const store = tx.objectStore("entries");
-  const request = store.getAll();
+function renderEntries() {
+  const container = document.getElementById("entries");
+  container.innerHTML = "";
 
-  request.onsuccess = function() {
-    const container = document.getElementById("entries");
-    container.innerHTML = "";
+  const entries = JSON.parse(localStorage.getItem("entries") || "[]");
 
-    request.result.reverse().forEach(entry => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = `<div class="date">${entry.date}</div>${entry.text}`;
-      container.appendChild(div);
-    });
-  };
+  entries.slice().reverse().forEach(e => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    div.innerHTML = `<div class="date">${e.date}</div><div>${e.text}</div>`;
+    container.appendChild(div);
+  });
 }
-<!-- STAGE B: Categories -->
-<script>
-const categories = [
-  "Иман",
-  "Крипта",
-  "Дисциплина",
-  "Здоровье",
-  "Семья",
-  "Идеи",
-  "Работа",
-  "Душевное"
-];
 
-const categorySelect = document.createElement("select");
-categorySelect.id = "categorySelect";
-categorySelect.style.marginTop = "10px";
-categorySelect.style.width = "100%";
-
-categories.forEach(cat => {
-  const option = document.createElement("option");
-  option.value = cat;
-  option.textContent = cat;
-  categorySelect.appendChild(option);
-});
-
-const textarea = document.querySelector("textarea");
-if (textarea) {
-  textarea.parentNode.insertBefore(categorySelect, textarea.nextSibling);
-}
+renderEntries();
 </script>
-
-
-</script>
-
 </body>
 </html>
+
+
 
